@@ -1,14 +1,17 @@
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 public class BudgetApplication {
-    enum transactionType {
+     public enum TransactionType {
         INCOME,
         EXPENSE
     }
 
-    static void main() {
+        static void main() {
         new BudgetApplication().runBudgetApplication();
     }
 
-    //TODO! Metod som visar den interaktiva menyn som används i budgethanteraren.
+    // Metod som visar den interaktiva menyn som används i budgethanteraren.
     private void displayMenu() {
         String menu = """
                 Budgethanteraren
@@ -23,8 +26,8 @@ public class BudgetApplication {
         IO.println(menu);
     }
 
-    //TODO! Metod för att köra programmet (budgethanteraren).
-    private void runBudgetApplication() {
+    // Metod för att köra programmet (budgethanteraren).
+    public void runBudgetApplication() {
         boolean running = true;
         do {
             displayMenu();
@@ -42,3 +45,4 @@ public class BudgetApplication {
     }
 
 }
+
