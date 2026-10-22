@@ -1,8 +1,11 @@
 import java.math.BigDecimal;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 
 public class BudgetApplication {
-     public enum TransactionType {
+    private final Repository<Transaction> repository = new Repository<>();
+
+    public enum TransactionType {
         INCOME,
         EXPENSE
     }
@@ -33,7 +36,7 @@ public class BudgetApplication {
             displayMenu();
             String choice = IO.readln("Gör ett val på menyn: ");
             switch (choice) {
-                case "1" -> IO.println("Lägg till transaktion");
+                case "1" -> addTransaction();
                 case "2" -> IO.println("Visa alla transaktioner");
                 case "3" -> IO.println("Visa saldo och sammanställning per kategori");
                 case "4" -> IO.println("Filtrera transaktioner");
@@ -44,5 +47,60 @@ public class BudgetApplication {
         } while (running);
     }
 
+    /**
+     * Metod skapad för att hantera användarens inmatning i Budgethanteraren. Tar användarens input,
+     * gör validering av indatan innan metoden sen skickar vidare en new Transaction till Repository<T>.
+     */
+    private void addTransaction() {
+        LocalDate date = readDate();
+
+        String category = IO.readln("Ange kategori: ");
+        if (category.isBlank()) {
+            IO.println("Kategorin får inte vara tom.");
+            return;
+        }
+
+        BigDecimal amount = readAmount();
+
+        TransactionType type = amount.signum() < 0
+                ? TransactionType.EXPENSE : TransactionType.INCOME;
+
+        repository.add(new Transaction(date, category, amount, type));
+    }
+
+    /**
+     * Metod för att läsa in datumet som användaren matar in via den interaktiva menyn.
+     * Returnerar LocalDate som används för att skapa en ny Transaction.
+     */
+    private LocalDate readDate() {
+        LocalDate date;
+        while (true) {
+            try {
+                return LocalDate.parse(IO.readln("Ange datum på format YYYY-MM-DD: "));
+            } catch (DateTimeException e) {
+                IO.println("Ogiltigt datum-format.");
+            }
+        }
+    }
+
+    /**
+     * Metod för att läsa in belopp som användaren matar in via den interaktiva menyn. 0 är ogiltigt belopp.
+     * Returnerar BigDecimal som används för att skapa en ny Transaction.
+     */
+    private BigDecimal readAmount() {
+        while (true) {
+            try {
+                BigDecimal amount = new BigDecimal(
+                        IO.readln("Ange belopp (ören anges efter punkt, exempelvis -130.49): "));
+                if (amount.signum() == 0) {
+                    IO.println("Beloppet kan inte vara 0.");
+                    continue;
+                }
+                return amount;
+            } catch (NumberFormatException e) {
+                IO.println("Ogiltigt belopp.");
+            }
+        }
+    }
 }
 
