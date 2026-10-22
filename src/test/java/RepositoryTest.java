@@ -31,5 +31,17 @@ class RepositoryTest {
         assertEquals(List.of(expense), result);
     }
 
+    @Test
+    void addIgnoresNullTransactions() {
+        Transaction income = new Transaction(LocalDate.of(2026,10,10), "Lön",
+                BigDecimal.valueOf(32000.00), BudgetApplication.TransactionType.INCOME);
+
+        repo.add(income);
+        repo.add(null);
+        var result = repo.findAll();
+
+        assertEquals(List.of(income), result);
+    }
+
 
 }
