@@ -65,4 +65,26 @@ class RepositoryTest {
 
         assertEquals(List.of(income), repo.findAll());
     }
+
+    @Test
+    void findWhereReturnsCorrectFilteringByExpense() {
+        Transaction salary = new Transaction(LocalDate.of(2026,10,10), "Lön",
+                BigDecimal.valueOf(32000.00), BudgetApplication.TransactionType.INCOME);
+        Transaction rent = new Transaction(LocalDate.of(2026, 10, 10), "Hyra",
+                BigDecimal.valueOf(-9833), BudgetApplication.TransactionType.EXPENSE);
+        Transaction carPayment = new Transaction(LocalDate.of(2026, 10, 18),
+                "Avbetalning bil", BigDecimal.valueOf(-4228), BudgetApplication.TransactionType.EXPENSE);
+        Transaction rentersInsurance = new Transaction(LocalDate.of(2026, 10, 18), "Hemförsäkring",
+                BigDecimal.valueOf(-249), BudgetApplication.TransactionType.EXPENSE);
+
+        repo.add(salary);
+        repo.add(rent);
+        repo.add(carPayment);
+        repo.add(rentersInsurance);
+
+        var result = repo.findWhere(transaction ->
+                transaction.incomeOrExpense() == BudgetApplication.TransactionType.EXPENSE);
+
+        assertEquals(List.of(rent, carPayment, rentersInsurance), result);
+    }
 }
