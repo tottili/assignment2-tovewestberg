@@ -21,16 +21,24 @@ public class Repository<T> {
             IO.println("Din transaktion lades inte till. Kontakta kundtjänst.");
     }
 
-    //TODO! Metod för att hämta alla transaktioner, returnerar en List av typen T.
+    /**
+     * Metod för att hitta och sammanställa alla transaktioner i en lista. Metoden returnerar en kopia av en lista
+     * för att förhindra otillåten/oförutsedda ändringar.
+     */
     public List<T> findAll() {
-
-        return null;
+        return new ArrayList<>(transactions);
     }
 
-    //TODO! Metod för att filtrera bland transaktionerna och hämta transaktioner beroende på vårt urval. Returnerar
-    // en List av typen T.
-    public List <T> findWhere(Predicate<T> villkor) {
-        return null;
+    /**
+     * Metod för att kunna filtrera i transaktionslistan. Returnerar en lista.
+     */
+    public List <T> findWhere(Predicate<T> condition) {
+        List <T> filteredResult = new ArrayList<>();
+        for (T item : transactions) {
+            if (condition.test(item))
+                filteredResult.add(item);
+        }
+        return filteredResult;
     }
 
 
