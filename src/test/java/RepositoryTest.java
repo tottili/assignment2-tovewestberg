@@ -33,7 +33,7 @@ class RepositoryTest {
 
     @Test
     void addIgnoresNullTransactions() {
-        Transaction income = new Transaction(LocalDate.of(2026,10,10), "Lön",
+        Transaction income = new Transaction(LocalDate.of(2026, 10, 10), "Lön",
                 BigDecimal.valueOf(32000.00), BudgetApplication.TransactionType.INCOME);
 
         repo.add(income);
@@ -43,5 +43,12 @@ class RepositoryTest {
         assertEquals(List.of(income), result);
     }
 
+    @Test
+    void findAllReturnsEmptyListWhenRepositoryIsEmpty() {
+        //Arrange-delen är deklarerad under klassnamnet, skapa ett tomt repository.
 
+        var result = repo.findAll();
+
+        assertEquals(List.of(), result);
+    }
 }
