@@ -6,26 +6,24 @@ public class Repository<T> {
     private List<T> transactions = new ArrayList<>();
 
 
-    //Metod för att addera en transaktion (inkomst eller utgift) med validering av indatan. Tar input av typen T
-    //TODO! Anpassa metoden efter konstruktorn som nu utför validering.
+    /**
+     * Metod för att addera en transaktion (inkomst eller utgift). Tar input av typen T, men lägger bara till
+     * i listan av typen record Transaction, är input av annan typ skrivs ett meddelande ut
+     */
     public void add(T item) {
-        if (item == null || (item instanceof Transaction tr && tr.amount().signum() == 0))
-           IO.println("Du har försökt lägga till en transaktion som inte är giltig.");
-        else if (item instanceof Transaction tr
-                    && tr.amount().signum() == 1
-                    && tr.incomeOrExpense() == BudgetApplication.TransactionType.INCOME) {
+        if (item == null)
+            IO.println("Du har försökt lägga till null.");
+        else if (item instanceof Transaction tr) {
             transactions.add(item);
-        } else if (item instanceof Transaction tr
-                    && tr.amount().signum() == -1
-                    && tr.incomeOrExpense() == BudgetApplication.TransactionType.EXPENSE) {
-            transactions.add(item);
-        } else {
-            IO.println("Din transaktion lades inte till. Kontakta kundtjänst.");
+            IO.println("Din transaktion har lagts till.");
         }
+        else
+            IO.println("Din transaktion lades inte till. Kontakta kundtjänst.");
     }
 
     //TODO! Metod för att hämta alla transaktioner, returnerar en List av typen T.
     public List<T> findAll() {
+
         return null;
     }
 
