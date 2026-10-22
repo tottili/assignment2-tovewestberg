@@ -51,4 +51,18 @@ class RepositoryTest {
 
         assertEquals(List.of(), result);
     }
+
+    @Test
+    void findAllReturnsACopyOfTheTransactionList() {
+        Transaction income = new Transaction(LocalDate.of(2026,10,10), "Lön",
+                BigDecimal.valueOf(32000.00), BudgetApplication.TransactionType.INCOME);
+
+        repo.add(income);
+        var result = repo.findAll();
+        IO.println(result);
+        result.clear();
+        IO.println(result);
+
+        assertEquals(List.of(income), repo.findAll());
+    }
 }
