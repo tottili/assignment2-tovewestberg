@@ -87,4 +87,15 @@ class RepositoryTest {
 
         assertEquals(List.of(rent, carPayment, rentersInsurance), result);
     }
+
+    @Test
+    void findWhereReturnsEmptyListWhenNothingIsFound() {
+        Transaction salary = new Transaction(LocalDate.of(2026,10,10), "Lön",
+                BigDecimal.valueOf(32000.00), BudgetApplication.TransactionType.INCOME);
+
+        var result = repo.findWhere(transaction ->
+                transaction.incomeOrExpense() == BudgetApplication.TransactionType.EXPENSE);
+
+        assertEquals(List.of(), result);
+    }
 }
