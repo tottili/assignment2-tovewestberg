@@ -52,4 +52,13 @@ class CalculationsTest {
 
         assertEquals(BigDecimal.valueOf(0), result);
     }
+
+    @Test
+    void givesZeroBalanceWhenThereAreNoTransactions() {
+        //Arrange-delen ligger i detta fall under klassnamnet.
+
+        var result = calc.calculateTotalBalance(repo.findAll());
+
+        assertEquals(BigDecimal.valueOf(0), result);
+    }
 }
