@@ -25,5 +25,22 @@ class InvalidTransactionExceptionTest {
         assertThrows(InvalidTransactionException.class, () -> new Transaction(date, null, amount, type));
     }
 
+    @Test
+    void amountNullThrowsWhenCreatingTransaction() {
+        LocalDate date = LocalDate.of(2026, 10, 18);
+        String category = "Mat";
+        var type = BudgetApplication.TransactionType.EXPENSE;
 
+        assertThrows(InvalidTransactionException.class, () -> new Transaction(date, category, null, type));
+    }
+
+    @Test
+    void enumNullThrowsWhenCreatingTransaction() {
+        LocalDate date = LocalDate.of(2026, 10, 18);
+        String category = "Mat";
+        BigDecimal amount = BigDecimal.valueOf(-326);
+
+        assertThrows(InvalidTransactionException.class, () -> new Transaction(date, category, amount,
+                null));
+    }
 }
