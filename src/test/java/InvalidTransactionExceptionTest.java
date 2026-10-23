@@ -43,4 +43,11 @@ class InvalidTransactionExceptionTest {
         assertThrows(InvalidTransactionException.class, () -> new Transaction(date, category, amount,
                 null));
     }
+
+    @Test
+    void showsTheRightMessageWhenExceptionIsCreated() {
+        var exception = new InvalidTransactionException("Detta är ett felmeddelande");
+
+        assertEquals("Detta är ett felmeddelande", exception.getMessage());
+    }
 }
