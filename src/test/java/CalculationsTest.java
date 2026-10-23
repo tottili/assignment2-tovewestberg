@@ -38,4 +38,18 @@ class CalculationsTest {
 
         assertEquals(BigDecimal.valueOf(-2333), result);
     }
+
+    @Test
+    void givesZeroBalanceWhenIncomeAndExpenseSameAmount() {
+        Transaction salary = new Transaction(LocalDate.of(2026,10,10), "Lön",
+                BigDecimal.valueOf(9833), BudgetApplication.TransactionType.INCOME);
+        Transaction rent = new Transaction(LocalDate.of(2026, 10, 10), "Hyra",
+                BigDecimal.valueOf(-9833), BudgetApplication.TransactionType.EXPENSE);
+        repo.add(salary);
+        repo.add(rent);
+
+        var result = calc.calculateTotalBalance(repo.findAll());
+
+        assertEquals(BigDecimal.valueOf(0), result);
+    }
 }
