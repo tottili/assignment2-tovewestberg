@@ -104,4 +104,17 @@ class CalculationsTest {
 
         assertEquals(Map.of("Hyra", BigDecimal.valueOf(9833), "Bilkostnader", BigDecimal.valueOf(4477)), result);
     }
+
+    @Test
+    void filtersOutIncomeEvenIfItSharesCategoryAsAnExpense() {
+        Transaction salary = new Transaction(LocalDate.of(2026,10,10), "Lön",
+                BigDecimal.valueOf(9833), BudgetApplication.TransactionType.INCOME);
+        Transaction salaryPoolBoy = new Transaction(LocalDate.of(2026, 10, 10), "Lön",
+                BigDecimal.valueOf(-2000), BudgetApplication.TransactionType.EXPENSE);
+
+        var transactions = List.of(salary, salaryPoolBoy);
+        var result = calc.calculateExpensesPerCategory(transactions);
+
+        assertEquals(Map.of("Lön", BigDecimal.valueOf(2000)), result);
+    }
 }
