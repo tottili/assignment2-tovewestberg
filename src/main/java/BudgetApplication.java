@@ -30,6 +30,7 @@ public class BudgetApplication {
     }
 
     // Metod för att köra programmet (budgethanteraren).
+    //TODO! Ändra menyvalen till funktioner!
     public void runBudgetApplication() {
         boolean running = true;
         do {
@@ -64,8 +65,11 @@ public class BudgetApplication {
 
         TransactionType type = amount.signum() < 0
                 ? TransactionType.EXPENSE : TransactionType.INCOME;
-
-        repository.add(new Transaction(date, category, amount, type));
+        try {
+            repository.add(new Transaction(date, category, amount, type));
+        } catch (InvalidTransactionException e) {
+            IO.println(e.getMessage());
+        }
     }
 
     /**
