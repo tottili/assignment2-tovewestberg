@@ -30,7 +30,7 @@ public class BudgetApplication {
                 1. Lägg till transaktion
                 2. Visa alla transaktioner
                 3. Visa saldo och sammanställning per kategori
-                4. Filtrera transaktioner
+                4. Filtrera transaktioner efter inkomst/utgift
                 5. Spara till fil
                 e. Avsluta
                 """;
@@ -53,10 +53,10 @@ public class BudgetApplication {
                 case "1" -> addTransactionByUser();
                 case "2" -> displayAllTransactions();
                 case "3" -> {
-                                showTotalBalance();
-                                showExpensePerCategory();
+                    showTotalBalance();
+                    showExpensePerCategory();
                 }
-                case "4" -> IO.println("Filtrera transaktioner");
+                case "4" -> filterTransactionTypeByUser();
                 case "5" -> saveToFile();
                 case "e", "E" -> running = false;
                 default -> IO.println("Det går inte att välja, försök igen.");
@@ -87,6 +87,38 @@ public class BudgetApplication {
         } catch (InvalidTransactionException e) {
             IO.println(e.getMessage());
         }
+        IO.println("Din transaktion är nu inlagd.");
+    }
+
+    /**
+     * Metod som låter användaren filtrera transaktioner. Användaren får välja mellan två förbestämda val. Beroende på
+     * vad användaren väljer skrivs transaktionerna ut i terminalen.
+     */
+    private void filterTransactionTypeByUser() {
+        String options = """
+                Välj hur du vill sortera:
+                1. Inkomst
+                2. Utgift
+                b. Avbryt
+                """;
+        IO.println(options);
+        String choice = IO.readln("Gör ett val: ");
+        switch (choice) {
+            case "1" -> {
+                var incomes = repository.findWhere(transaction ->
+                        transaction.incomeOrExpense() == Transaction.TransactionType.INCOME);
+                for (var income : incomes)
+                    IO.println(income);
+            }
+            case "2" -> {
+                var expenses = repository.findWhere(transaction ->
+                        transaction.incomeOrExpense() == Transaction.TransactionType.EXPENSE);
+                for (var expense : expenses)
+                    IO.println(expense);
+            }
+            case "b", "B" -> {}
+            default -> IO.println("Det går inte att välja, försök igen.");
+        }
     }
 
     /**
@@ -99,7 +131,7 @@ public class BudgetApplication {
             try {
                 return LocalDate.parse(IO.readln("Ange datum på format YYYY-MM-DD: "));
             } catch (DateTimeException e) {
-                IO.println("Ogiltigt datum-format.");
+                IO.println("Ogiltigt datum-format, ange som YYYY-MM-DD. ");
             }
         }
     }
@@ -206,7 +238,7 @@ public class BudgetApplication {
     private void configureLogging(Level level) {
         LOG.setLevel(level);
         try {
-            FileHandler fileHandler = new FileHandler("application.log", true);
+            FileHandler fileHandler = new FileHandler("application.log");
             fileHandler.setFormatter(new SimpleFormatter());
             LOG.addHandler(fileHandler);
             LOG.setUseParentHandlers(false);
@@ -219,7 +251,9 @@ public class BudgetApplication {
      * Hjälpmetod för att skriva ut alla transaktioner i listan.
      */
     private void displayAllTransactions() {
-        IO.println(repository.findAll());
+        for (Transaction tr : repository.findAll()) {
+            IO.println(tr);
+        }
     }
 
     /**
