@@ -1,8 +1,7 @@
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public record Transaction(LocalDate date, String category, BigDecimal amount,
-                          BudgetApplication.TransactionType incomeOrExpense) {
+public record Transaction(LocalDate date, String category, BigDecimal amount, TransactionType incomeOrExpense) {
 
     // Kompakt konstruktor med kontroll av inparametrar för att säkerställa att transaktionerna
     // är giltiga innan de skapas.
@@ -19,11 +18,16 @@ public record Transaction(LocalDate date, String category, BigDecimal amount,
 
         if (incomeOrExpense == null)
             throw new InvalidTransactionException("Transaktionen måste märkas.");
-        else if (incomeOrExpense == BudgetApplication.TransactionType.INCOME
+        else if (incomeOrExpense == TransactionType.INCOME
                 && amount.signum() == -1)
             throw new InvalidTransactionException("Inkomster måste vara positiva belopp.");
-        else if (incomeOrExpense == BudgetApplication.TransactionType.EXPENSE
+        else if (incomeOrExpense == TransactionType.EXPENSE
                 && amount.signum() == 1)
             throw new InvalidTransactionException("Utgifter måste vara negativa belopp.");
+    }
+
+    public enum TransactionType {
+        INCOME,
+        EXPENSE
     }
 }

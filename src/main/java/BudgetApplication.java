@@ -1,6 +1,5 @@
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -10,11 +9,6 @@ import java.util.List;
 
 public class BudgetApplication {
     private final Repository<Transaction> repository = new Repository<>();
-
-    public enum TransactionType {
-        INCOME,
-        EXPENSE
-    }
 
     static void main() {
         new BudgetApplication().runBudgetApplication();
@@ -71,8 +65,8 @@ public class BudgetApplication {
 
         BigDecimal amount = readAmount();
 
-        TransactionType type = amount.signum() < 0
-                ? TransactionType.EXPENSE : TransactionType.INCOME;
+        Transaction.TransactionType type = amount.signum() < 0
+                ? Transaction.TransactionType.EXPENSE : Transaction.TransactionType.INCOME;
         try {
             repository.add(new Transaction(date, category, amount, type));
         } catch (InvalidTransactionException e) {
@@ -136,7 +130,7 @@ public class BudgetApplication {
 
             try {
                 Transaction transaction = new Transaction(LocalDate.parse(fields[0]), fields[1],
-                        new BigDecimal(fields[2]), TransactionType.valueOf(fields[3]));
+                        new BigDecimal(fields[2]), Transaction.TransactionType.valueOf(fields[3]));
                 repository.add(transaction);
             } catch (DateTimeException | IllegalArgumentException | InvalidTransactionException e) {
                 IO.println("Hoppar över rad " + (i + 1) + ": " + e.getMessage());

@@ -12,7 +12,7 @@ class RepositoryTest {
     @Test
     void addPutsIncomeInTheTransactionList() {
         Transaction income = new Transaction(LocalDate.of(2026,10,10), "Lön",
-                BigDecimal.valueOf(32000.00), BudgetApplication.TransactionType.INCOME);
+                BigDecimal.valueOf(32000.00), Transaction.TransactionType.INCOME);
 
         repo.add(income);
 
@@ -23,7 +23,7 @@ class RepositoryTest {
     @Test
     void addPutsExpenseInTheTransactionList() {
         Transaction expense = new Transaction(LocalDate.of(2026, 10, 10), "Hyra",
-                BigDecimal.valueOf(-9833), BudgetApplication.TransactionType.EXPENSE);
+                BigDecimal.valueOf(-9833), Transaction.TransactionType.EXPENSE);
 
         repo.add(expense);
 
@@ -34,7 +34,7 @@ class RepositoryTest {
     @Test
     void addIgnoresNullTransactions() {
         Transaction income = new Transaction(LocalDate.of(2026, 10, 10), "Lön",
-                BigDecimal.valueOf(32000.00), BudgetApplication.TransactionType.INCOME);
+                BigDecimal.valueOf(32000.00), Transaction.TransactionType.INCOME);
 
         repo.add(income);
         repo.add(null);
@@ -54,7 +54,7 @@ class RepositoryTest {
     @Test
     void findAllReturnsACopyOfTheTransactionList() {
         Transaction income = new Transaction(LocalDate.of(2026,10,10), "Lön",
-                BigDecimal.valueOf(32000.00), BudgetApplication.TransactionType.INCOME);
+                BigDecimal.valueOf(32000.00), Transaction.TransactionType.INCOME);
 
         repo.add(income);
 
@@ -68,13 +68,13 @@ class RepositoryTest {
     @Test
     void findAllReturnsACompleteListOfTheTransactions() {
         Transaction salary = new Transaction(LocalDate.of(2026,10,10), "Lön",
-                BigDecimal.valueOf(32000.00), BudgetApplication.TransactionType.INCOME);
+                BigDecimal.valueOf(32000.00), Transaction.TransactionType.INCOME);
         Transaction rent = new Transaction(LocalDate.of(2026, 10, 10), "Hyra",
-                BigDecimal.valueOf(-9833), BudgetApplication.TransactionType.EXPENSE);
+                BigDecimal.valueOf(-9833), Transaction.TransactionType.EXPENSE);
         Transaction carPayment = new Transaction(LocalDate.of(2026, 10, 18),
-                "Avbetalning bil", BigDecimal.valueOf(-4228), BudgetApplication.TransactionType.EXPENSE);
+                "Avbetalning bil", BigDecimal.valueOf(-4228), Transaction.TransactionType.EXPENSE);
         Transaction rentersInsurance = new Transaction(LocalDate.of(2026, 10, 18),
-                "Hemförsäkring", BigDecimal.valueOf(-249), BudgetApplication.TransactionType.EXPENSE);
+                "Hemförsäkring", BigDecimal.valueOf(-249), Transaction.TransactionType.EXPENSE);
 
         repo.add(salary);
         repo.add(rent);
@@ -88,13 +88,13 @@ class RepositoryTest {
     @Test
     void findWhereReturnsCorrectFilteringByExpense() {
         Transaction salary = new Transaction(LocalDate.of(2026,10,10), "Lön",
-                BigDecimal.valueOf(32000.00), BudgetApplication.TransactionType.INCOME);
+                BigDecimal.valueOf(32000.00), Transaction.TransactionType.INCOME);
         Transaction rent = new Transaction(LocalDate.of(2026, 10, 10), "Hyra",
-                BigDecimal.valueOf(-9833), BudgetApplication.TransactionType.EXPENSE);
+                BigDecimal.valueOf(-9833), Transaction.TransactionType.EXPENSE);
         Transaction carPayment = new Transaction(LocalDate.of(2026, 10, 18),
-                "Avbetalning bil", BigDecimal.valueOf(-4228), BudgetApplication.TransactionType.EXPENSE);
+                "Avbetalning bil", BigDecimal.valueOf(-4228), Transaction.TransactionType.EXPENSE);
         Transaction rentersInsurance = new Transaction(LocalDate.of(2026, 10, 18),
-                "Hemförsäkring", BigDecimal.valueOf(-249), BudgetApplication.TransactionType.EXPENSE);
+                "Hemförsäkring", BigDecimal.valueOf(-249), Transaction.TransactionType.EXPENSE);
 
         repo.add(salary);
         repo.add(rent);
@@ -102,17 +102,17 @@ class RepositoryTest {
         repo.add(rentersInsurance);
 
         var result = repo.findWhere(transaction ->
-                transaction.incomeOrExpense() == BudgetApplication.TransactionType.EXPENSE);
+                transaction.incomeOrExpense() == Transaction.TransactionType.EXPENSE);
         assertEquals(List.of(rent, carPayment, rentersInsurance), result);
     }
 
     @Test
     void findWhereReturnsEmptyListWhenNothingIsFound() {
         Transaction salary = new Transaction(LocalDate.of(2026,10,10), "Lön",
-                BigDecimal.valueOf(32000.00), BudgetApplication.TransactionType.INCOME);
+                BigDecimal.valueOf(32000.00), Transaction.TransactionType.INCOME);
 
         var result = repo.findWhere(transaction ->
-                transaction.incomeOrExpense() == BudgetApplication.TransactionType.EXPENSE);
+                transaction.incomeOrExpense() == Transaction.TransactionType.EXPENSE);
         assertEquals(List.of(), result);
     }
 }

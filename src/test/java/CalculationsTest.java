@@ -15,9 +15,9 @@ class CalculationsTest {
     @Test
     void calculatesBalanceCorrectlyWhenIncomeGreaterThanExpenses() {
         Transaction salary = new Transaction(LocalDate.of(2026,10,10), "Lön",
-                BigDecimal.valueOf(32000), BudgetApplication.TransactionType.INCOME);
+                BigDecimal.valueOf(32000), Transaction.TransactionType.INCOME);
         Transaction rent = new Transaction(LocalDate.of(2026, 10, 10), "Hyra",
-                BigDecimal.valueOf(-9833), BudgetApplication.TransactionType.EXPENSE);
+                BigDecimal.valueOf(-9833), Transaction.TransactionType.EXPENSE);
         repo.add(salary);
         repo.add(rent);
 
@@ -29,9 +29,9 @@ class CalculationsTest {
     @Test
     void givesNegativeBalanceWhenExpenseGreaterThanIncome() {
         Transaction salary = new Transaction(LocalDate.of(2026,10,10), "Lön",
-                BigDecimal.valueOf(7500), BudgetApplication.TransactionType.INCOME);
+                BigDecimal.valueOf(7500), Transaction.TransactionType.INCOME);
         Transaction rent = new Transaction(LocalDate.of(2026, 10, 10), "Hyra",
-                BigDecimal.valueOf(-9833), BudgetApplication.TransactionType.EXPENSE);
+                BigDecimal.valueOf(-9833), Transaction.TransactionType.EXPENSE);
         repo.add(salary);
         repo.add(rent);
 
@@ -43,9 +43,9 @@ class CalculationsTest {
     @Test
     void givesZeroBalanceWhenIncomeAndExpenseSameAmount() {
         Transaction salary = new Transaction(LocalDate.of(2026,10,10), "Lön",
-                BigDecimal.valueOf(9833), BudgetApplication.TransactionType.INCOME);
+                BigDecimal.valueOf(9833), Transaction.TransactionType.INCOME);
         Transaction rent = new Transaction(LocalDate.of(2026, 10, 10), "Hyra",
-                BigDecimal.valueOf(-9833), BudgetApplication.TransactionType.EXPENSE);
+                BigDecimal.valueOf(-9833), Transaction.TransactionType.EXPENSE);
         repo.add(salary);
         repo.add(rent);
 
@@ -66,9 +66,9 @@ class CalculationsTest {
     @Test
     void expensesAreMadePositiveAmountsForPresentingExpensesSummary() {
         Transaction rent = new Transaction(LocalDate.of(2026, 10, 10), "Hyra",
-                BigDecimal.valueOf(-9833), BudgetApplication.TransactionType.EXPENSE);
+                BigDecimal.valueOf(-9833), Transaction.TransactionType.EXPENSE);
         Transaction carPayment = new Transaction(LocalDate.of(2026, 10, 18),
-                "Bilkostnader", BigDecimal.valueOf(-4228), BudgetApplication.TransactionType.EXPENSE);
+                "Bilkostnader", BigDecimal.valueOf(-4228), Transaction.TransactionType.EXPENSE);
 
         var transactions = List.of(rent, carPayment);
         var result = calc.calculateExpensesPerCategory(transactions);
@@ -80,9 +80,9 @@ class CalculationsTest {
     @Test
     void summationOfExpensesExcludesIncome() {
         Transaction salary = new Transaction(LocalDate.of(2026,10,10), "Lön",
-                BigDecimal.valueOf(32000), BudgetApplication.TransactionType.INCOME);
+                BigDecimal.valueOf(32000), Transaction.TransactionType.INCOME);
         Transaction rent = new Transaction(LocalDate.of(2026, 10, 10), "Hyra",
-                BigDecimal.valueOf(-9833), BudgetApplication.TransactionType.EXPENSE);
+                BigDecimal.valueOf(-9833), Transaction.TransactionType.EXPENSE);
 
         var transactions = List.of(salary, rent);
         var result = calc.calculateExpensesPerCategory(transactions);
@@ -93,11 +93,11 @@ class CalculationsTest {
     @Test
     void expensesAreGroupedByCategory() {
         Transaction rent = new Transaction(LocalDate.of(2026, 10, 10), "Hyra",
-                BigDecimal.valueOf(-9833), BudgetApplication.TransactionType.EXPENSE);
+                BigDecimal.valueOf(-9833), Transaction.TransactionType.EXPENSE);
         Transaction carPayment = new Transaction(LocalDate.of(2026, 10, 18),
-                "Bilkostnader", BigDecimal.valueOf(-4228), BudgetApplication.TransactionType.EXPENSE);
+                "Bilkostnader", BigDecimal.valueOf(-4228), Transaction.TransactionType.EXPENSE);
         Transaction carInsurance = new Transaction(LocalDate.of(2026, 10, 18),
-                "Bilkostnader", BigDecimal.valueOf(-249), BudgetApplication.TransactionType.EXPENSE);
+                "Bilkostnader", BigDecimal.valueOf(-249), Transaction.TransactionType.EXPENSE);
 
         var transactions = List.of(rent, carPayment, carInsurance);
         var result = calc.calculateExpensesPerCategory(transactions);
@@ -108,9 +108,9 @@ class CalculationsTest {
     @Test
     void filtersOutIncomeEvenIfItSharesCategoryAsAnExpense() {
         Transaction salary = new Transaction(LocalDate.of(2026,10,10), "Lön",
-                BigDecimal.valueOf(9833), BudgetApplication.TransactionType.INCOME);
+                BigDecimal.valueOf(9833), Transaction.TransactionType.INCOME);
         Transaction salaryPoolBoy = new Transaction(LocalDate.of(2026, 10, 10), "Lön",
-                BigDecimal.valueOf(-2000), BudgetApplication.TransactionType.EXPENSE);
+                BigDecimal.valueOf(-2000), Transaction.TransactionType.EXPENSE);
 
         var transactions = List.of(salary, salaryPoolBoy);
         var result = calc.calculateExpensesPerCategory(transactions);
