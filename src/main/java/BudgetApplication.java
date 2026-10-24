@@ -6,15 +6,22 @@ import java.nio.file.Path;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class BudgetApplication {
     private final Repository<Transaction> repository = new Repository<>();
+    private static final Logger LOG = Logger.getLogger(BudgetApplication.class.getName());
 
     static void main() {
         new BudgetApplication().runBudgetApplication();
     }
 
-    // Metod som visar den interaktiva menyn som används i budgethanteraren.
+    /**
+     * Metod som visar den interaktiva menyn som används i budgethanteraren.
+     */
     private void displayMenu() {
         String menu = """
                 Budgethanteraren
@@ -29,9 +36,13 @@ public class BudgetApplication {
         IO.println(menu);
     }
 
-    // Metod för att köra programmet (budgethanteraren).
+    /**
+     * Metod för att köra programmet (budgethanteraren) och börjar med att läsa in från filen Budget om den finns.
+     */
     //TODO! Ändra menyvalen till funktioner!
     public void runBudgetApplication() {
+        configureLogging(Level.INFO);
+        LOG.info("Applikationen startar");
         readFromFile();
 
         boolean running = true;
@@ -48,6 +59,7 @@ public class BudgetApplication {
                 default -> IO.println("Det går inte att välja, försök igen.");
             }
         } while (running);
+        LOG.info("Applikationen stängs ner.");
     }
 
     /**
@@ -121,21 +133,24 @@ public class BudgetApplication {
 
     private void loadBudgetFile(List<String> budgetLines) {
         for (int i = 0; i < budgetLines.size(); i++) {
-            String[] fields = budgetLines.get(i).split(",", -1);
+            String[] field = budgetLines.get(i).split(",", -1);
 
-            if (fields.length != 4) {
+            if (field.length != 4) {
+                LOG.log(Level.WARNING, "Rad " + (i + 1) + " har fel antal kolumner och skippas vid inläsning till lista");
                 IO.println("Hoppar över rad " + (i + 1) + ": det måste vara fyra kolumner");
                 continue;
             }
 
             try {
-                Transaction transaction = new Transaction(LocalDate.parse(fields[0]), fields[1],
-                        new BigDecimal(fields[2]), Transaction.TransactionType.valueOf(fields[3]));
+                Transaction transaction = new Transaction(LocalDate.parse(field[0]), field[1],
+                        new BigDecimal(field[2]), Transaction.TransactionType.valueOf(field[3]));
                 repository.add(transaction);
             } catch (DateTimeException | IllegalArgumentException | InvalidTransactionException e) {
+                LOG.log(Level.WARNING, "Felaktig filrad " + (i + 1) + " kommer skippas vid inläsning till lista");
                 IO.println("Hoppar över rad " + (i + 1) + ": " + e.getMessage());
             }
         }
+        LOG.info(repository.findAll().size() + " antal transaktioner överförda från fil.");
     }
 
     /**
@@ -145,10 +160,14 @@ public class BudgetApplication {
         Path path = getBudgetFilePath();
 
         try {
+            LOG.info("Försöker ladda transaktioner från fil " + path.getFileName());
             loadBudgetFile(Files.readAllLines(path));
+            LOG.info("Transaktioner klara.");
         } catch (NoSuchFileException e) {
+            LOG.log(Level.WARNING, "Ingen fil hittades", e);
             IO.println("Ingen sparad fil hittades " + e.getMessage());
         } catch (IOException e) {
+            LOG.log(Level.SEVERE, "Kunde inte läsa in filen. ", e);
             IO.println("Det blev ett fel när filen skulle läsas in " + e.getMessage());
         }
     }
@@ -167,10 +186,29 @@ public class BudgetApplication {
                                 transaction.incomeOrExpense().name())).toList();
 
         try {
+            LOG.info("Försöker spara filen: " + path.getFileName());
             Files.write(path, budgetLines);
             IO.println("Filen är nu sparad.");
+            LOG.info("Fil " + path.getFileName() + " sparad");
         } catch (IOException e) {
+            LOG.log(Level.SEVERE, "Det gick inte att spara fil " + path.getFileName(), e);
             IO.println("Det gick inte att spara filen. " + e.getMessage() + " Kontakta kundtjänst.");
+        }
+    }
+
+    /**
+     * Metod som med Level som inparameter för att kunna anpassa loggningsmeddelandena, konfigurerar även
+     * filen som ska spara loggningen.
+     */
+    private void configureLogging(Level level) {
+        LOG.setLevel(level);
+        try {
+            FileHandler fileHandler = new FileHandler("application.log", true);
+            fileHandler.setFormatter(new SimpleFormatter());
+            LOG.addHandler(fileHandler);
+            LOG.setUseParentHandlers(false);
+        } catch (IOException e) {
+            IO.println("Kunde inte konfigurera loggning" + e.getMessage());
         }
     }
 }
