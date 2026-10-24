@@ -11,7 +11,7 @@ class InvalidTransactionExceptionTest {
     void throwsForCreatingTransactionWithNullDate() {
         String category = "Mat";
         BigDecimal amount = BigDecimal.valueOf(-326);
-        var type = BudgetApplication.TransactionType.EXPENSE;
+        var type = Transaction.TransactionType.EXPENSE;
 
         assertThrows(InvalidTransactionException.class, () -> new Transaction(null, category, amount, type));
     }
@@ -20,7 +20,7 @@ class InvalidTransactionExceptionTest {
     void nullCategoryThrowsWhenCreatingTransaction() {
         LocalDate date = LocalDate.of(2026, 10, 18);
         BigDecimal amount = BigDecimal.valueOf(-326);
-        var type = BudgetApplication.TransactionType.EXPENSE;
+        var type = Transaction.TransactionType.EXPENSE;
 
         assertThrows(InvalidTransactionException.class, () -> new Transaction(date, null, amount, type));
     }
@@ -29,7 +29,7 @@ class InvalidTransactionExceptionTest {
     void amountNullThrowsWhenCreatingTransaction() {
         LocalDate date = LocalDate.of(2026, 10, 18);
         String category = "Mat";
-        var type = BudgetApplication.TransactionType.EXPENSE;
+        var type = Transaction.TransactionType.EXPENSE;
 
         assertThrows(InvalidTransactionException.class, () -> new Transaction(date, category, null, type));
     }
