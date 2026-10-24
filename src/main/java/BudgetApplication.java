@@ -1,6 +1,12 @@
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.util.List;
 
 public class BudgetApplication {
     private final Repository<Transaction> repository = new Repository<>();
@@ -10,7 +16,7 @@ public class BudgetApplication {
         EXPENSE
     }
 
-        static void main() {
+    static void main() {
         new BudgetApplication().runBudgetApplication();
     }
 
@@ -32,16 +38,18 @@ public class BudgetApplication {
     // Metod för att köra programmet (budgethanteraren).
     //TODO! Ändra menyvalen till funktioner!
     public void runBudgetApplication() {
+        readFromFile();
+
         boolean running = true;
         do {
             displayMenu();
             String choice = IO.readln("Gör ett val på menyn: ");
             switch (choice) {
-                case "1" -> addTransaction();
+                case "1" -> addTransactionByUser();
                 case "2" -> IO.println("Visa alla transaktioner");
                 case "3" -> IO.println("Visa saldo och sammanställning per kategori");
                 case "4" -> IO.println("Filtrera transaktioner");
-                case "5" -> IO.println("Spara till fil");
+                case "5" -> saveToFile();
                 case "e", "E" -> running = false;
                 default -> IO.println("Det går inte att välja, försök igen.");
             }
@@ -52,7 +60,7 @@ public class BudgetApplication {
      * Metod skapad för att hantera användarens inmatning i Budgethanteraren. Tar användarens input,
      * gör validering av indatan innan metoden sen skickar vidare en new Transaction till Repository<T>.
      */
-    private void addTransaction() {
+    private void addTransactionByUser() {
         LocalDate date = readDate();
 
         String category = IO.readln("Ange kategori: ");
@@ -104,6 +112,71 @@ public class BudgetApplication {
             } catch (NumberFormatException e) {
                 IO.println("Ogiltigt belopp.");
             }
+        }
+    }
+
+    /**
+     * Hjälpmetod för att hitta path-en till filen Budget. (csv-format)
+     * Returnerar en Path.
+     */
+    private Path getBudgetFilePath() {
+        String homeFolder = System.getProperty("user.home");
+        Path homePath = Path.of(homeFolder);
+        return homePath.resolve("Budget.csv");
+    }
+
+    private void loadBudgetFile(List<String> budgetLines) {
+        for (int i = 0; i < budgetLines.size(); i++) {
+            String[] fields = budgetLines.get(i).split(",", -1);
+
+            if (fields.length != 4) {
+                IO.println("Hoppar över rad " + (i + 1) + ": det måste vara fyra kolumner");
+                continue;
+            }
+
+            try {
+                Transaction transaction = new Transaction(LocalDate.parse(fields[0]), fields[1],
+                        new BigDecimal(fields[2]), TransactionType.valueOf(fields[3]));
+                repository.add(transaction);
+            } catch (DateTimeException | IllegalArgumentException | InvalidTransactionException e) {
+                IO.println("Hoppar över rad " + (i + 1) + ": " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Metod för att läsa in transaktioner från en fil, ifall den finns.
+     */
+    private void readFromFile() {
+        Path path = getBudgetFilePath();
+
+        try {
+            loadBudgetFile(Files.readAllLines(path));
+        } catch (NoSuchFileException e) {
+            IO.println("Ingen sparad fil hittades " + e.getMessage());
+        } catch (IOException e) {
+            IO.println("Det blev ett fel när filen skulle läsas in " + e.getMessage());
+        }
+    }
+
+    /**
+     * Metod för att spara tillagda transaktioner i en fil med namn Budget (.csv).
+     */
+    private void saveToFile() {
+        Path path = getBudgetFilePath();
+
+        List<String> budgetLines = repository.findAll().stream()
+                        .map(transaction -> String.join(",",
+                                transaction.date().toString(),
+                                transaction.category(),
+                                transaction.amount().toPlainString(),
+                                transaction.incomeOrExpense().name())).toList();
+
+        try {
+            Files.write(path, budgetLines);
+            IO.println("Filen är nu sparad.");
+        } catch (IOException e) {
+            IO.println("Det gick inte att spara filen. " + e.getMessage() + " Kontakta kundtjänst.");
         }
     }
 }
