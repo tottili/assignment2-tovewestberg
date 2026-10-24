@@ -13,6 +13,7 @@ import java.util.logging.SimpleFormatter;
 
 public class BudgetApplication {
     private final Repository<Transaction> repository = new Repository<>();
+    private final Calculations calc = new Calculations();
     private static final Logger LOG = Logger.getLogger(BudgetApplication.class.getName());
 
     static void main() {
@@ -39,7 +40,6 @@ public class BudgetApplication {
     /**
      * Metod för att köra programmet (budgethanteraren) och börjar med att läsa in från filen Budget om den finns.
      */
-    //TODO! Ändra menyvalen till funktioner!
     public void runBudgetApplication() {
         configureLogging(Level.INFO);
         LOG.info("Applikationen startar");
@@ -51,8 +51,11 @@ public class BudgetApplication {
             String choice = IO.readln("Gör ett val på menyn: ");
             switch (choice) {
                 case "1" -> addTransactionByUser();
-                case "2" -> IO.println("Visa alla transaktioner");
-                case "3" -> IO.println("Visa saldo och sammanställning per kategori");
+                case "2" -> displayAllTransactions();
+                case "3" -> {
+                                showTotalBalance();
+                                showExpensePerCategory();
+                }
                 case "4" -> IO.println("Filtrera transaktioner");
                 case "5" -> saveToFile();
                 case "e", "E" -> running = false;
@@ -210,6 +213,27 @@ public class BudgetApplication {
         } catch (IOException e) {
             IO.println("Kunde inte konfigurera loggning" + e.getMessage());
         }
+    }
+
+    /**
+     * Hjälpmetod för att skriva ut alla transaktioner i listan.
+     */
+    private void displayAllTransactions() {
+        IO.println(repository.findAll());
+    }
+
+    /**
+     * Hjälpmetod för att skriva ut alla det totala saldot med hänsyn till transaktionerna i listan.
+     */
+    private void showTotalBalance() {
+        IO.println("Saldo: " + calc.calculateTotalBalance(repository.findAll()));
+    }
+
+    /**
+     * Hjälpmetod för att sammanställa alla utgifter, grupperat per kategori.
+     */
+    private void showExpensePerCategory() {
+        IO.println("Sammanställning per kategori: " + calc.calculateExpensesPerCategory(repository.findAll()));
     }
 }
 
