@@ -38,7 +38,7 @@ public class BudgetApplication {
     }
 
     /**
-     * Metod för att köra programmet (budgethanteraren) och börjar med att läsa in från filen Budget om den finns.
+     * Metod för att köra programmet och börjar med att läsa in från filen Budget om den finns.
      */
     public void runBudgetApplication() {
         configureLogging(Level.INFO);
@@ -84,10 +84,11 @@ public class BudgetApplication {
                 ? Transaction.TransactionType.EXPENSE : Transaction.TransactionType.INCOME;
         try {
             repository.add(new Transaction(date, category, amount, type));
+            IO.println("Din transaktion är nu inlagd.");
+
         } catch (InvalidTransactionException e) {
             IO.println(e.getMessage());
         }
-        IO.println("Din transaktion är nu inlagd.");
     }
 
     /**
@@ -166,12 +167,19 @@ public class BudgetApplication {
         return homePath.resolve("Budget.csv");
     }
 
+    /**
+     * Metod som översätter en List of Strings till att lägga in datan i listan repository vid start av programmet.
+     * Översättningen till listan måste göras eftersom när användaren lägger till transaktioner och sparar filen
+     * skrivs den befintliga filen över. Metoden gör därmed att gamla transaktioner och nytillagda samlas ihop i en
+     * uppdaterad fil.
+     */
     private void loadBudgetFile(List<String> budgetLines) {
         for (int i = 0; i < budgetLines.size(); i++) {
             String[] field = budgetLines.get(i).split(",", -1);
 
             if (field.length != 4) {
-                LOG.log(Level.WARNING, "Rad " + (i + 1) + " har fel antal kolumner och skippas vid inläsning till lista");
+                LOG.log(Level.WARNING, "Rad " + (i + 1) + " har fel antal kolumner och skippas vid inläsning " +
+                        "till lista");
                 IO.println("Hoppar över rad " + (i + 1) + ": det måste vara fyra kolumner");
                 continue;
             }
@@ -185,11 +193,12 @@ public class BudgetApplication {
                 IO.println("Hoppar över rad " + (i + 1) + ": " + e.getMessage());
             }
         }
-        LOG.info(repository.findAll().size() + " antal transaktioner överförda från fil.");
+        LOG.info(repository.findAll().size() + " st transaktioner överförda från fil.");
     }
 
     /**
-     * Metod för att läsa in transaktioner från en fil, ifall den finns.
+     * Metod för att hitta filen Budget, läser in filen och gör om den till en List of Strings och skickar den direkt
+     * som inparameter till en annan metod (loadBudgetFile).
      */
     private void readFromFile() {
         Path path = getBudgetFilePath();
@@ -200,7 +209,6 @@ public class BudgetApplication {
             LOG.info("Transaktioner klara.");
         } catch (NoSuchFileException e) {
             LOG.log(Level.WARNING, "Ingen fil hittades", e);
-            IO.println("Ingen sparad fil hittades " + e.getMessage());
         } catch (IOException e) {
             LOG.log(Level.SEVERE, "Kunde inte läsa in filen. ", e);
             IO.println("Det blev ett fel när filen skulle läsas in " + e.getMessage());
@@ -208,7 +216,7 @@ public class BudgetApplication {
     }
 
     /**
-     * Metod för att spara tillagda transaktioner i en fil med namn Budget (.csv).
+     * Metod för att spara listan repository i en fil med namn Budget (.csv).
      */
     private void saveToFile() {
         Path path = getBudgetFilePath();

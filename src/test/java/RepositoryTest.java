@@ -111,6 +111,8 @@ class RepositoryTest {
         Transaction salary = new Transaction(LocalDate.of(2026,10,10), "Lön",
                 BigDecimal.valueOf(32000.00), Transaction.TransactionType.INCOME);
 
+        repo.add(salary);
+
         var result = repo.findWhere(transaction ->
                 transaction.incomeOrExpense() == Transaction.TransactionType.EXPENSE);
         assertEquals(List.of(), result);

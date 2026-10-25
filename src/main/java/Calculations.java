@@ -6,8 +6,7 @@ import java.util.stream.Collectors;
 public class Calculations {
 
     /**
-     * Metod för att loopa igenom en lista med Transactions och summera saldot på kontot. Returnerar
-     * en BigDecimal.
+     * Metod för att summera saldot på kontot. Returnerar en BigDecimal.
      */
     public BigDecimal calculateTotalBalance(List<Transaction> transactions) {
         BigDecimal totalBalance = BigDecimal.ZERO;
@@ -15,7 +14,6 @@ public class Calculations {
         for (Transaction tr : transactions) {
             totalBalance = totalBalance.add(tr.amount());
         }
-
         return totalBalance;
     }
 
@@ -29,7 +27,7 @@ public class Calculations {
             List<Transaction> transactions) {
         var expenses = transactions.stream()
                 .filter(transaction ->
-                        transaction.incomeOrExpense() == BudgetApplication.TransactionType.EXPENSE);
+                        transaction.incomeOrExpense() == Transaction.TransactionType.EXPENSE);
 
         var expensesPerCategory = expenses.collect(
                 Collectors.groupingBy(Transaction::category,

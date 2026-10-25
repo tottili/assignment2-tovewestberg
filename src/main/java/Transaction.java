@@ -3,8 +3,9 @@ import java.time.LocalDate;
 
 public record Transaction(LocalDate date, String category, BigDecimal amount, TransactionType incomeOrExpense) {
 
-    // Kompakt konstruktor med kontroll av inparametrar för att säkerställa att transaktionerna
-    // är giltiga innan de skapas.
+    /** Kompakt konstruktor med kontroll av inparametrar för att säkerställa att transaktionerna
+     *  är giltiga innan de skapas.
+     */
     public Transaction {
 
         if (date == null)
@@ -26,6 +27,9 @@ public record Transaction(LocalDate date, String category, BigDecimal amount, Tr
             throw new InvalidTransactionException("Utgifter måste vara negativa belopp.");
     }
 
+    /**
+     *  Enum för att avgöra de två utgiftstyper som finns.
+     */
     public enum TransactionType {
         INCOME,
         EXPENSE
