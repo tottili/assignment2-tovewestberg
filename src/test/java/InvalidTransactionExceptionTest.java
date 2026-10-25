@@ -50,4 +50,34 @@ class InvalidTransactionExceptionTest {
 
         assertEquals("Detta är ett felmeddelande", exception.getMessage());
     }
+
+    @Test
+    void throwsForZeroAmount() {
+        LocalDate date = LocalDate.of(2026, 10, 18);
+        String category = "Bredband";
+        BigDecimal amount = BigDecimal.valueOf(0);
+        var type = Transaction.TransactionType.EXPENSE;
+
+        assertThrows(InvalidTransactionException.class, () -> new Transaction(date, category, amount, type));
+    }
+
+    @Test
+    void throwsForNegativeAmountWhenMarkedIncome() {
+        LocalDate date = LocalDate.of(2026, 10, 18);
+        String category = "Bredband";
+        BigDecimal amount = BigDecimal.valueOf(-479);
+        var type = Transaction.TransactionType.INCOME;
+
+        assertThrows(InvalidTransactionException.class, () -> new Transaction(date, category, amount, type));
+    }
+
+    @Test
+    void throwsForPositiveAmountWhenMarkedExpense() {
+        LocalDate date = LocalDate.of(2026, 10, 18);
+        String category = "Bredband";
+        BigDecimal amount = BigDecimal.valueOf(479);
+        var type = Transaction.TransactionType.EXPENSE;
+
+        assertThrows(InvalidTransactionException.class, () -> new Transaction(date, category, amount, type));
+    }
 }
