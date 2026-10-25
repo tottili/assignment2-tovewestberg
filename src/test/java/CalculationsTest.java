@@ -117,4 +117,17 @@ class CalculationsTest {
 
         assertEquals(Map.of("Lön", BigDecimal.valueOf(2000)), result);
     }
+
+    @Test
+    void summationOfExpensesIsEmptyWhenOnlyIncome() {
+        Transaction salary = new Transaction(LocalDate.of(2026,10,10), "Lön",
+                BigDecimal.valueOf(32000), Transaction.TransactionType.INCOME);
+        Transaction salary2 = new Transaction(LocalDate.of(2026,10,10), "Lön",
+                BigDecimal.valueOf(9833), Transaction.TransactionType.INCOME);
+
+        var transaction = List.of(salary, salary2);
+        var result = calc.calculateExpensesPerCategory(transaction);
+
+        assertEquals(Map.of(), result);
+    }
 }
